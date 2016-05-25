@@ -2120,6 +2120,26 @@ int create_pkt_cmd_session_set_property(
 		pkt->size += sizeof(u32) + sizeof(struct hfi_enable);
 		break;
 	}
+	case HAL_PARAM_VENC_VIDEO_SIGNAL_INFO:
+	{
+		struct hal_video_signal_info *hal = pdata;
+		struct hfi_video_signal_metadata *signal_info =
+			(struct hfi_video_signal_metadata *)
+			&pkt->rg_property_data[1];
+
+		signal_info->enable = true;
+		signal_info->video_format = MSM_VIDC_NTSC;
+		signal_info->video_full_range = hal->full_range;
+		signal_info->color_description = MSM_VIDC_COLOR_DESC_PRESENT;
+		signal_info->color_primaries = hal->color_space;
+		signal_info->transfer_characteristics = hal->transfer_chars;
+		signal_info->matrix_coeffs = hal->matrix_coeffs;
+
+		pkt->rg_property_data[0] =
+			HFI_PROPERTY_PARAM_VENC_VIDEO_SIGNAL_INFO;
+		pkt->size += sizeof(u32) + sizeof(*signal_info);
+		break;
+	}
 	/* FOLLOWING PROPERTIES ARE NOT IMPLEMENTED IN CORE YET */
 	case HAL_CONFIG_BUFFER_REQUIREMENTS:
 	case HAL_CONFIG_PRIORITY:
